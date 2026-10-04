@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shibuya Olayı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Shippori+Mincho+B1:wght@700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!--APP-START-->
+<div id="app">
+  <canvas id="game" aria-label="Shibuya Olayı oyun alanı"></canvas>
+
+  <section id="menu" class="screen screen-title">
+    <div class="title-kanji" aria-hidden="true">渋谷事変</div>
+    <div class="title-block">
+      <p class="eyebrow">10.31 · 帳の内側 · Hayran yapımı dövüş oyunu</p>
+      <h1 class="title"><span class="t1">SHIBUYA</span><span class="t2">OLAYI</span></h1>
+      <p class="tagline">Perde indi. Kesişme noktasında en güçlü büyücü ile Lanetlerin Kralı karşı karşıya.</p>
+      <nav class="menu-buttons" aria-label="Ana menü">
+        <button class="btn btn-main" data-action="play" id="btnPlay">Savaş <small>VS CPU</small></button>
+        <button class="btn btn-main" data-action="training" id="btnTraining">Antrenman <small>Hareketsiz rakip, hızlı bekleme, dolu ulti</small></button>
+        <button class="btn btn-main" data-action="controls" id="btnControls">Kontroller</button>
+      </nav>
+      <div class="toggles">
+        <button class="chip" id="btnSound" aria-pressed="true">Ses: Açık</button>
+        <button class="chip" id="btnVoice" aria-pressed="true">Seslendirme: Açık</button>
+      </div>
+    </div>
+    <p class="credit">Gege Akutami'nin <em>Jujutsu Kaisen</em> eserinden esinlenen, ticari olmayan hayran yapımı.</p>
+  </section>
+
+  <section id="select" class="screen screen-select" hidden>
+    <header class="select-head">
+      <p class="eyebrow" id="modeLabel">VS CPU</p>
+      <h2>Savaşçını seç</h2>
+    </header>
+    <div class="cards">
+      <button class="card" data-char="gojo" id="cardGojo" aria-pressed="true">
+        <canvas class="preview" width="280" height="330"></canvas>
+        <div class="card-body">
+          <span class="jp">五条悟</span>
+          <h3>GOJO SATORU</h3>
+          <p class="role">Sınırsız · Altı Göz</p>
+          <ul class="skills">
+            <li><kbd>1</kbd><b>Ao</b> Rakibi kendine çeker; tekrar bas, sert tekme</li>
+            <li><kbd>2</kbd><b>Aka</b> Uzaktan sarsan kırmızı patlama</li>
+            <li><kbd>3</kbd><b>Seri Darbe</b> Tekme-yumruk, karna iki vuruş, yukarı savurma</li>
+            <li><kbd>4</kbd><b>Karşı Saldırı</b> Vurulunca Mavi ile ezer, arkaya ışınlanıp tekme</li>
+            <li><kbd>R</kbd><b>Işınlanma</b> Fare imlecinin olduğu yere</li>
+            <li class="ult"><kbd>G</kbd><b>Sonsuz Boşluk</b> 0.2 sn alan, 3 sn koşu, %200 Hollow Purple</li>
+          </ul>
+        </div>
+      </button>
+      <button class="card" data-char="sukuna" id="cardSukuna" aria-pressed="false">
+        <canvas class="preview" width="280" height="330"></canvas>
+        <div class="card-body">
+          <span class="jp">両面宿儺</span>
+          <h3>RYOMEN SUKUNA</h3>
+          <p class="role">Lanetlerin Kralı · Tapınak</p>
+          <ul class="skills">
+            <li><kbd>1</kbd><b>Cleave</b> Büyük kesiş; isabette ışınlanıp kesip biçer</li>
+            <li><kbd>2</kbd><b>Dismantle</b> Zıplar, “KAI!” diye uzun düz kesiş atar</li>
+            <li><kbd>3</kbd><b>Örümcek Ağı</b> Yerden ağ kesişi, havaya fırlatıp yere çakar</li>
+            <li><kbd>4</kbd><b>Kara Şimşek</b> Black Flash yumruğu</li>
+            <li><kbd>R</kbd><b>İyileşme</b> Ters lanet tekniği</li>
+            <li class="ult"><kbd>G</kbd><b>Dört Kollu Form</b> Dünya kesişleri, Alan Açılımı, sonra R: Fuga</li>
+          </ul>
+        </div>
+      </button>
+    </div>
+    <footer class="select-foot">
+      <div class="seg" role="radiogroup" aria-label="Zorluk" id="diffGroup">
+        <span class="seg-label">Zorluk</span>
+        <button class="seg-btn" role="radio" data-diff="0" id="diff0" aria-checked="false">Kolay</button>
+        <button class="seg-btn" role="radio" data-diff="1" id="diff1" aria-checked="true">Normal</button>
+        <button class="seg-btn" role="radio" data-diff="2" id="diff2" aria-checked="false">Zor</button>
+      </div>
+      <div class="foot-actions">
+        <button class="btn btn-ghost" data-action="back" id="btnBack">Geri</button>
+        <button class="btn btn-primary" data-action="start" id="btnStart">Savaş!</button>
+      </div>
+    </footer>
+  </section>
+
+  <section id="controls" class="screen screen-panel" hidden>
+    <div class="panel">
+      <h2>Kontroller</h2>
+      <dl class="keys">
+        <div><dt><kbd>A</kbd><kbd>D</kbd></dt><dd>Hareket</dd></div>
+        <div><dt><kbd>W</kbd> / <kbd>Boşluk</kbd></dt><dd>Zıpla (havada bir kez daha)</dd></div>
+        <div><dt><kbd>S</kbd></dt><dd>Blok</dd></div>
+        <div><dt><kbd>Shift</kbd></dt><dd>Atılma (kısa dokunulmazlık)</dd></div>
+        <div><dt><kbd>F</kbd> / sol tık</dt><dd>Temel vuruş (3'lü kombo)</dd></div>
+        <div><dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></dt><dd>Yetenekler</dd></div>
+        <div><dt><kbd>R</kbd></dt><dd>Özel yetenek (Gojo: imlece ışınlanma · Sukuna: iyileşme / Fuga)</dd></div>
+        <div><dt><kbd>G</kbd></dt><dd>Ulti (bar dolunca)</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Duraklat</dd></div>
+        <div><dt><kbd>M</kbd></dt><dd>Sesi aç/kapat</dd></div>
+      </dl>
+      <p class="note">Ulti barı vurdukça ve vuruldukça dolar. Dokunmatik ekranda butonlar otomatik çıkar.</p>
+      <button class="btn btn-primary" data-action="back" id="btnControlsBack">Tamam</button>
+    </div>
+  </section>
+
+  <section id="pause" class="screen screen-panel" hidden>
+    <div class="panel panel-small">
+      <h2>Duraklatıldı</h2>
+      <div class="stack">
+        <button class="btn btn-primary" data-action="resume" id="btnResume">Devam et</button>
+        <button class="btn btn-ghost" data-action="restart" id="btnRestart">Maçı yeniden başlat</button>
+        <button class="btn btn-ghost" data-action="menu" id="btnMenu">Ana menü</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="screen screen-panel" hidden>
+    <div class="panel panel-small">
+      <p class="eyebrow" id="resultKanji">勝利</p>
+      <h2 id="resultTitle">Zafer</h2>
+      <p class="note" id="resultText"></p>
+      <div class="stack">
+        <button class="btn btn-primary" data-action="restart" id="btnRematch">Rövanş</button>
+        <button class="btn btn-ghost" data-action="select" id="btnReselect">Karakter seç</button>
+        <button class="btn btn-ghost" data-action="menu" id="btnResultMenu">Ana menü</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="touch" class="touch" hidden>
+    <div class="pad pad-left">
+      <button class="tb" data-hold="left" aria-label="Sol">◀</button>
+      <button class="tb" data-hold="block" aria-label="Blok">▼</button>
+      <button class="tb" data-hold="right" aria-label="Sağ">▶</button>
+      <button class="tb tb-wide" data-tap="jump" aria-label="Zıpla">▲</button>
+    </div>
+    <div class="pad pad-right">
+      <button class="tb" data-tap="1">1</button>
+      <button class="tb" data-tap="2">2</button>
+      <button class="tb" data-tap="3">3</button>
+      <button class="tb" data-tap="4">4</button>
+      <button class="tb tb-acc" data-tap="R">R</button>
+      <button class="tb tb-ult" data-tap="G">G</button>
+      <button class="tb tb-wide" data-tap="attack">Vur</button>
+      <button class="tb" data-tap="dash">Atıl</button>
+      <button class="tb tb-pause" data-pause="1" aria-label="Duraklat">❚❚</button>
+    </div>
+  </div>
+
+  <div id="rotate" class="rotate">Daha iyi oynamak için cihazı yatay çevir.</div>
+</div>
+<!--APP-END-->
+<script src="js/util.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/fighter.js"></script>
+<script src="js/sukuna.js"></script>
+<script src="js/gojo.js"></script>
+<script src="js/controls.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
